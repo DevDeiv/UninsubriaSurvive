@@ -4,8 +4,8 @@ data class StudentState(
     val id: Int? = null,
     val firstName: String = "",
     val lastName: String = "",
-    val serialNumber: String = "",
-    val eMail: String = "",
-    val password: String = "",
-    val isAddingAccount: Boolean = false
+    val matricola: String = "",
+    val emailAddress: String = "",
+    val profilePicture: String? = "",
+    val isAccountInDb: Boolean = true
 )

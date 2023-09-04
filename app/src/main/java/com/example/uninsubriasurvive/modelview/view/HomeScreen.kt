@@ -18,12 +18,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.example.uninsubriasurvive.modelview.model.StudentState
 import com.example.uninsubriasurvive.modelview.view.utility.LoginButton
 import com.example.uninsubriasurvive.sign_in.UserData
 
 @Composable
 fun HomeScreen(
-    userData: UserData?,
+    userState: StudentState,
     onSignOut: () -> Unit
 ) {
     Column (
@@ -32,9 +33,9 @@ fun HomeScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ){
 
-        if(userData?.profilePictureUrl != null) {
+        if(userState?.profilePicture != null) {
             AsyncImage(
-                model = userData.profilePictureUrl,
+                model = userState.profilePicture,
                 contentDescription = null,
                 modifier = Modifier
                     .size(150.dp)
@@ -42,10 +43,9 @@ fun HomeScreen(
             )
         }
         Spacer(modifier = Modifier.height(16.dp))
-        if (userData?.username != null) {
-            println("sonoqui")
+        if (userState?.emailAddress != null) {
             Text(
-                text = userData.username,
+                text = userState.emailAddress,
                 color = Color.Black,
                 textAlign = TextAlign.Center,
                 fontSize = 32.sp,

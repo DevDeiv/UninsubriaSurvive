@@ -11,9 +11,11 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -23,6 +25,7 @@ import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Lifecycling
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 
@@ -33,6 +36,11 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.room.Room
+import com.example.uninsubriasurvive.database.Db
+import com.example.uninsubriasurvive.database.utility.ListExamConverter
+import com.example.uninsubriasurvive.modelview.model.StudentState
+import com.example.uninsubriasurvive.modelview.model.UserViewModel
 import com.example.uninsubriasurvive.modelview.view.HomeScreen
 import com.example.uninsubriasurvive.modelview.view.SignInScreen
 import com.example.uninsubriasurvive.navigation.NavGraph
@@ -45,6 +53,19 @@ import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
 
+//    private val db by lazy{
+//        Room.databaseBuilder(
+//            applicationContext,
+//            Db::class.java,
+//            "InsubriaSurvive.db"
+//        ).fallbackToDestructiveMigration()
+//            .build()
+//    }
+
+
+    private val db by lazy {
+        Db.getDatabase(applicationContext)
+    }
     private val googleAuthUiClient by lazy {
         GoogleAuthUiClient(
             context = applicationContext,
@@ -52,20 +73,37 @@ class MainActivity : ComponentActivity() {
         )
     }
 
+    private val userViewModel by viewModels<UserViewModel> (
+        factoryProducer = {
+            object : ViewModelProvider. Factory{
+                override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                    return UserViewModel(dao = db.dao) as T
+                }
+            }
+        }
+    )
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
         setContent {
             val context = LocalContext.current
             (context as? Activity)?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LOCKED
 
-            AppTheme {
-                Surface {
-                    val navController = rememberNavController()
 
+            AppTheme {
+                val state by userViewModel.state.collectAsState()
+                val navController = rememberNavController()
+                Surface {
                     NavGraph(
                         navController = navController,
                         googleAuthUiClient = googleAuthUiClient,
-                        applicationContext = context)
+                        applicationContext = context,
+                        userViewModel =userViewModel,
+                        onEvent = userViewModel::onEvent,
+                        state = state
+                    )
 
 //                    NavHost(navController = navController, startDestination = "sign_in") {
 //                        composable("sign_in") {

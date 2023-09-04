@@ -13,8 +13,10 @@ interface StudentDao {
     suspend fun upsertStudent(student: Student)
 
     @Delete
-    suspend fun deleteUser(student: Student)
+    suspend fun deleteStudent(student: Student)
 
-    @Query("SELECT * FROM student WHERE emailAddress = :emailAddress")
-    suspend fun findByEmail(emailAddress: String): Student
+    @Query("SELECT * FROM student WHERE email = :email")
+    suspend fun findByEmail(email: String): Student?
+
+
 }

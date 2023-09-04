@@ -99,5 +99,6 @@ dependencies {
 
     val nav_version = "2.7.1"
     implementation("androidx.navigation:navigation-compose:$nav_version")
+    implementation("com.google.code.gson:gson:2.7")
 
 }
