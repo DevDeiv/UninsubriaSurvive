@@ -16,4 +16,9 @@ interface ExamDao {
     @Transaction
     @Query("SELECT * FROM exam")
     fun getExamWithDates(): List<ExamWithDates>
+
+    @Transaction
+    @Query("SELECT * FROM exam WHERE examId= :examId")
+    fun findById(examId: Int): ExamWithDates
+
 }

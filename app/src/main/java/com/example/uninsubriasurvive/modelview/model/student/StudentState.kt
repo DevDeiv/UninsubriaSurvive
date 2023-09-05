@@ -1,4 +1,4 @@
-package com.example.uninsubriasurvive.modelview.model
+package com.example.uninsubriasurvive.modelview.model.student
 
 data class StudentState(
     val id: Int? = null,

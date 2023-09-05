@@ -1,18 +1,17 @@
-package com.example.uninsubriasurvive.modelview.model
+package com.example.uninsubriasurvive.modelview.model.student
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.uninsubriasurvive.database.entity.Student
 import com.example.uninsubriasurvive.database.entity.dao.StudentDao
-import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.lang.Exception
 
-class UserViewModel (
+class StudentViewModel (
     private val dao: StudentDao
 ): ViewModel() {
 
@@ -25,7 +24,7 @@ class UserViewModel (
     suspend fun findByEmail(emailAddress: String) {
         viewModelScope.launch {
            val student: Student? =  dao.findByEmail(emailAddress)
-            onEvent(UserEvent.CopyStudent(student!!))
+            student?.let { UserEvent.CopyStudent(it) }?.let { onEvent(it) }
         }
     }
     suspend fun deleteStudent(student: Student) {

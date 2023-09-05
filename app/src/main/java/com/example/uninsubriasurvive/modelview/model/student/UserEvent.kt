@@ -1,12 +1,11 @@
-package com.example.uninsubriasurvive.modelview.model
+package com.example.uninsubriasurvive.modelview.model.student
 
 import com.example.uninsubriasurvive.database.entity.Student
-import com.google.firebase.firestore.auth.User
 
 sealed interface UserEvent {
 
     object SaveStudent: UserEvent
-    data class IsAccountInDb(val isAccountInDb: Boolean) :UserEvent
+    data class IsAccountInDb(val isAccountInDb: Boolean) : UserEvent
     data class DeleteStudent(val student: Student): UserEvent
     data class  FindStudent(val emailAddress: String): UserEvent
 

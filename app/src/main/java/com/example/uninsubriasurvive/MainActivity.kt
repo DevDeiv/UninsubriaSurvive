@@ -1,54 +1,23 @@
 package com.example.uninsubriasurvive
 
 import android.app.Activity
-import android.app.Activity.RESULT_OK
-import android.content.IntentSender
 import android.content.pm.ActivityInfo
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
-import androidx.activity.result.IntentSenderRequest
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleCoroutineScope
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.Lifecycling
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.lifecycleScope
 
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavBackStackEntry
-import androidx.navigation.NavController
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import androidx.room.Room
 import com.example.uninsubriasurvive.database.Db
-import com.example.uninsubriasurvive.database.utility.ListExamConverter
-import com.example.uninsubriasurvive.modelview.model.StudentState
-import com.example.uninsubriasurvive.modelview.model.UserViewModel
-import com.example.uninsubriasurvive.modelview.view.HomeScreen
-import com.example.uninsubriasurvive.modelview.view.SignInScreen
+import com.example.uninsubriasurvive.modelview.model.exam.ExamViewModel
+import com.example.uninsubriasurvive.modelview.model.student.StudentViewModel
 import com.example.uninsubriasurvive.navigation.NavGraph
 import com.example.uninsubriasurvive.sign_in.GoogleAuthUiClient
-import com.example.uninsubriasurvive.sign_in.SignInViewModel
 import com.example.uninsubriasurvive.ui.theme.AppTheme
 import com.google.android.gms.auth.api.identity.Identity
-import kotlinx.coroutines.launch
 
 
 class MainActivity : ComponentActivity() {
@@ -73,11 +42,20 @@ class MainActivity : ComponentActivity() {
         )
     }
 
-    private val userViewModel by viewModels<UserViewModel> (
+    private val userViewModel by viewModels<StudentViewModel> (
         factoryProducer = {
             object : ViewModelProvider. Factory{
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                    return UserViewModel(dao = db.dao) as T
+                    return StudentViewModel(dao = db.dao) as T
+                }
+            }
+        }
+    )
+    private val examViewModel by viewModels<ExamViewModel> (
+        factoryProducer = {
+            object : ViewModelProvider. Factory{
+                override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                    return ExamViewModel(dao = db.examDao) as T
                 }
             }
         }
@@ -93,16 +71,12 @@ class MainActivity : ComponentActivity() {
 
 
             AppTheme {
-                val state by userViewModel.state.collectAsState()
-                val navController = rememberNavController()
                 Surface {
                     NavGraph(
-                        navController = navController,
                         googleAuthUiClient = googleAuthUiClient,
                         applicationContext = context,
-                        userViewModel =userViewModel,
-                        onEvent = userViewModel::onEvent,
-                        state = state
+                        studentViewModel =userViewModel,
+                        examViewModel = examViewModel,
                     )
 
 //                    NavHost(navController = navController, startDestination = "sign_in") {

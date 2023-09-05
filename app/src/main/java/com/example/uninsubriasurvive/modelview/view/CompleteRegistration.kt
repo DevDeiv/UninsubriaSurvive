@@ -9,8 +9,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.uninsubriasurvive.modelview.model.StudentState
-import com.example.uninsubriasurvive.modelview.model.UserEvent
+import com.example.uninsubriasurvive.modelview.model.student.StudentState
+import com.example.uninsubriasurvive.modelview.model.student.UserEvent
 import com.example.uninsubriasurvive.modelview.view.utility.CustomTextField
 import com.example.uninsubriasurvive.modelview.view.utility.LoginButton
 

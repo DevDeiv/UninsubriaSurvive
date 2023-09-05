@@ -76,7 +76,7 @@ abstract class Db: RoomDatabase() {
                     context.applicationContext,
                     Db::class.java,
                     "InsubriaSurvive.db"
-                ).fallbackToDestructiveMigration()
+                ).fallbackToDestructiveMigration().allowMainThreadQueries()
                     .addCallback(object : RoomDatabase.Callback(){
                         override fun onCreate(db: SupportSQLiteDatabase) {
                             super.onCreate(db)
@@ -92,9 +92,14 @@ abstract class Db: RoomDatabase() {
 
                                     val esame1 = Exam( null,"Analisi", 9,"Scritto")
                                     val esame2 = Exam( null,"PDM", 9,"Scritto")
+                                    val esame3 = Exam( null,"Programmazione", 9,"Scritto")
+                                    val esame4 = Exam( null,"Logica", 9,"Scritto")
 
                                     val esameId1 = examDao.insertExam(esame1).toInt()
                                     val esameId2 = examDao.insertExam(esame2).toInt()
+                                    val esameId3 = examDao.insertExam(esame3).toInt()
+                                    val esameId4 = examDao.insertExam(esame4).toInt()
+
 
                                     val datePerEsame1 = listOf(
                                         Dates(null, "2023-09-10", "09:00", esameId1),
@@ -105,9 +110,19 @@ abstract class Db: RoomDatabase() {
                                         Dates(null, "2023-09-15", "11:00", esameId2),
                                         Dates(null, "2023-09-20", "16:45", esameId2)
                                     )
+                                    val datePerEsame3 = listOf(
+                                        Dates(null, "2023-09-15", "11:00", esameId3),
+                                        Dates(null, "2023-09-20", "16:45", esameId3)
+                                    )
+                                    val datePerEsame4 = listOf(
+                                        Dates(null, "2023-09-15", "11:00", esameId4),
+                                        Dates(null, "2023-09-20", "16:45", esameId4)
+                                    )
 
                                     dateDao.insertDates(datePerEsame1)
                                     dateDao.insertDates(datePerEsame2)
+                                    dateDao.insertDates(datePerEsame3)
+                                    dateDao.insertDates(datePerEsame4)
                                 }
                             }
 
