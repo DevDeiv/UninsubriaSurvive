@@ -16,6 +16,7 @@ import androidx.compose.material.Card
 import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.KeyboardArrowRight
+import androidx.compose.material.icons.outlined.Send
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ElevatedCard
@@ -38,6 +39,8 @@ import com.example.uninsubriasurvive.modelview.model.exam.ExamState
 import com.example.uninsubriasurvive.modelview.model.exam.ExamViewModel
 import com.example.uninsubriasurvive.modelview.model.student.StudentState
 import com.example.uninsubriasurvive.modelview.model.student.StudentViewModel
+import com.example.uninsubriasurvive.modelview.model.student.UserEvent
+import com.google.firebase.firestore.auth.User
 
 @Composable
 fun ExamScreen(
@@ -47,6 +50,7 @@ fun ExamScreen(
 ) {
     val examEvent = examViewModel::onEvent
     val examState by examViewModel.state.collectAsState()
+    val onEvent = studentViewModel::onEvent
 
 
     Column (
@@ -64,7 +68,8 @@ fun ExamScreen(
             items(examState.examWithDates) { item: ExamWithDates ->
                 ShowExam(
                     exam = item.exam,
-                    goToDetails = {navHomeController.navigate("exam_details/${item.exam.examId.toString()}")}
+                    goToDetails = {navHomeController.navigate("exam_details/${item.exam.examId.toString()}")},
+                   onEvent = onEvent
                 )
             }
         }
@@ -75,7 +80,8 @@ fun ExamScreen(
 @Composable
 fun ShowExam(
     exam: Exam,
-    goToDetails: () -> Unit
+    goToDetails: () -> Unit,
+    onEvent: (UserEvent) -> Unit
 ) {
     Card (
         elevation = 6.dp,
@@ -137,9 +143,32 @@ fun ShowExam(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(18.dp)
         ){
-            IconButton(onClick = { goToDetails() }) {
-                Icon(imageVector = Icons.Outlined.KeyboardArrowRight, contentDescription = null)
-            }
+           Column (
+               verticalArrangement = Arrangement.spacedBy(12.dp)
+           ){
+               IconButton(onClick = { goToDetails() }) {
+                   Icon(
+                       imageVector = Icons.Outlined.KeyboardArrowRight,
+                       contentDescription = null,
+                       tint = MaterialTheme.colorScheme.onSurfaceVariant
+                   )
+               }
+               IconButton(onClick = { onEvent(UserEvent.AddMaybeInterested(exam)) } ) {
+
+                   Icon(
+                       imageVector = Icons.Outlined.Send,
+                       contentDescription = null,
+                       tint = MaterialTheme.colorScheme.onSurfaceVariant
+                   )
+               }
+               IconButton(onClick = { onEvent(UserEvent.AddNotInterested(exam)) }) {
+                   Icon(
+                       imageVector = Icons.Outlined.KeyboardArrowRight,
+                       contentDescription = null,
+                       tint = MaterialTheme.colorScheme.onSurfaceVariant
+                   )
+               }
+           }
         }
 
     }

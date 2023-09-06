@@ -46,15 +46,16 @@ fun NavGraph(
     NavHost(navController = navController, startDestination = "auth") {
 
         navigation(route = "auth", startDestination = "sign_in") {
-            composable("sign_in") {
 
+            userOnEvent(UserEvent.ResetViewModel)
+
+            composable("sign_in") {
                 val viewModel = viewModel<SignInViewModel>()
                 val signInState by viewModel.state.collectAsStateWithLifecycle()
 
+                //SE VIENE TROVATO UN UTENTE LOGGATO SALTA LA FASE DI ACCESSO
                 LaunchedEffect(key1 = Unit ) {
-
                     if (googleAuthUiClient.getSignedInUser() != null) {
-
                         navController.navigate("application")
                     }
                 }
@@ -104,26 +105,20 @@ fun NavGraph(
 
             composable("complete_registration") {
                 val userData = googleAuthUiClient.getSignedInUser()
+                val viewModel = viewModel<SignInViewModel>()
+                val signInState by viewModel.state.collectAsStateWithLifecycle()
 
-                LaunchedEffect(key1 = true)  {
+                LaunchedEffect(key1 = signInState.isSignInSuccessful)  {
                     studentViewModel.isStudentInDb(userData?.emailAddress)
                 }
 
                 if (studentState.isAccountInDb) {
-
                     navController.navigate("application")
                 }
                 else {
-                    Toast.makeText(
-                        applicationContext,
-                        "User not Saved in db ",
-                        Toast.LENGTH_LONG
-                    ).show()
-
                     userOnEvent(UserEvent.SetEmail(userData?.emailAddress))
                     userOnEvent(UserEvent.SetProfilePicture(userData?.profilePictureUrl))
                     userOnEvent(UserEvent.IsAccountInDb(isAccountInDb = false))
-
 
                     CompleteRegistrationScreen(
                         state = studentState,
@@ -140,6 +135,7 @@ fun NavGraph(
 
             composable("home") {
                 val userData = googleAuthUiClient.getSignedInUser()
+
 
                 LaunchedEffect(key1 = true){
                     coroutineScope.launch {

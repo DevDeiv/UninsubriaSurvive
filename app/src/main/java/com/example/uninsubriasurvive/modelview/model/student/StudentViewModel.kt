@@ -3,6 +3,8 @@ package com.example.uninsubriasurvive.modelview.model.student
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.uninsubriasurvive.database.entity.Exam
+import com.example.uninsubriasurvive.database.entity.ExamWithDate
 import com.example.uninsubriasurvive.database.entity.Student
 import com.example.uninsubriasurvive.database.entity.dao.StudentDao
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -55,6 +57,36 @@ class StudentViewModel (
         }
     }
 
+    fun buildStudent(): Student {
+        val student = Student(
+            _state.value.id,
+            _state.value.firstName,
+            _state.value.lastName,
+            _state.value.matricola,
+            _state.value.emailAddress,
+            _state.value.profilePicture,
+            _state.value.interested,
+            _state.value.maybe,
+            _state.value.notInterested,
+        )
+        return student
+    }
+
+    private fun retrieveExams() :ArrayList<Exam> {
+        val exams = ArrayList<Exam>()
+        _state.value.maybe.forEach {
+            exams.add(it)
+        }
+        return exams
+    }
+    private fun retrieveExamsWhitDate(): ArrayList<ExamWithDate> {
+        val examsWithDate = ArrayList<ExamWithDate>()
+        _state.value.interested.forEach {
+            examsWithDate.add(it)
+        }
+        return examsWithDate
+    }
+
     fun onEvent (event: UserEvent) {
 
         when(event){
@@ -80,44 +112,39 @@ class StudentViewModel (
                     val matricola = _state.value.matricola
                     val emailAddress = _state.value.emailAddress
                     val profilePicture = _state.value.profilePicture
-                    if (
-                        firstName != null &&
-                        lastName != null &&
-                        matricola != null &&
-                        emailAddress != null
-                    ) {
-                        val student = Student(
-                            firstName = firstName,
-                            lastName = lastName,
-                            matricola = matricola,
-                            email = emailAddress,
-                            profilePictureUrl = profilePicture,
-                            interested = null,
-                            maybe = null,
-                            notInterested = null,
+
+                    val student = Student(
+                        firstName = firstName,
+                        lastName = lastName,
+                        matricola = matricola,
+                        email = emailAddress,
+                        profilePictureUrl = profilePicture,
                         )
 
-                        viewModelScope.launch {
-                            dao.upsertStudent(student)
-                        }
+                    viewModelScope.launch {
+                        dao.upsertStudent(student)
                     }
                 }
             }
+
             is UserEvent.SetEmail -> {
                 _state.update { it.copy(
                     emailAddress = event.emailAddress!!
                 ) }
             }
+
             is UserEvent.SetFirstName -> {
                 _state.update { it.copy(
                     firstName = event.firstName
                 ) }
             }
+
             is UserEvent.SetLastName -> {
                 _state.update { it.copy(
                     lastName = event.lastName
                 ) }
             }
+
             is UserEvent.SetMatricola -> {
                 _state.update { it.copy(
                     matricola = event.matricola
@@ -133,16 +160,108 @@ class StudentViewModel (
             is UserEvent.CopyStudent -> {
                 event.student.run {
                     _state.update { it.copy(
+                        id = id,
                         firstName = firstName,
                         lastName = lastName,
                         emailAddress = email,
                         matricola = matricola,
-                        profilePicture = profilePictureUrl
+                        profilePicture = profilePictureUrl,
+                        interested =  interested,
+                        maybe = maybe,
+                        notInterested = notInterested
                     ) }
                 }
             }
-            UserEvent.ResetViewModel -> TODO()
+
+            UserEvent.ResetViewModel -> {
+                _state.update { StudentState() }
+            }
+
+            is UserEvent.AddInterestedExam -> {
+
+                val exams = retrieveExamsWhitDate()
+                exams.add(event.examWithDate)
+
+                _state.update { it.copy(
+                    interested = exams
+                ) }
+
+                val student = buildStudent()
+                viewModelScope.launch {
+                    dao.upsertStudent(student)
+                }
+            }
+
+            is UserEvent.AddMaybeInterested -> {
+                val exams = retrieveExams()
+                exams.add(event.exam)
+                _state.update { it.copy(
+                    maybe = exams
+                ) }
+
+                val student = buildStudent()
+
+                viewModelScope.launch {
+                    dao.upsertStudent(student)
+                }
+                println("QUI ARRRIVO BENE")
+            }
+            is UserEvent.AddNotInterested -> {
+                val exams = retrieveExams()
+                exams.add(event.exam)
+
+                _state.update { it.copy(
+                    notInterested = exams
+                ) }
+
+                val student = buildStudent()
+                viewModelScope.launch {
+                    dao.upsertStudent(student)
+                }
+            }
+
+            is UserEvent.RemoveInterested -> {
+                val examsWithDate = retrieveExamsWhitDate()
+                examsWithDate.remove(event.exam)
+
+                _state.update { it.copy(
+                    interested = examsWithDate
+                ) }
+                val student = buildStudent()
+                viewModelScope.launch {
+                    dao.upsertStudent(student)
+                }
+            }
+
+            is UserEvent.RemoveMaybeInterested -> {
+                val exams = retrieveExams()
+                exams.remove(event.exam)
+
+                _state.update { it.copy(
+                    maybe = exams
+                ) }
+
+                val student = buildStudent()
+                viewModelScope.launch {
+                    dao.upsertStudent(student)
+                }
+            }
+
+            is UserEvent.RemoveNotInterested -> {
+                val exams = retrieveExams()
+                exams.remove(event.exam)
+
+                _state.update { it.copy(
+                    notInterested = exams
+                ) }
+
+                val student = buildStudent()
+                viewModelScope.launch {
+                    dao.upsertStudent(student)
+                }
+            }
         }
+
 
     }
 }

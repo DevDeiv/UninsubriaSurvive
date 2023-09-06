@@ -13,6 +13,8 @@ import com.example.uninsubriasurvive.database.entity.dao.DatesDao
 import com.example.uninsubriasurvive.database.entity.dao.ExamDao
 import com.example.uninsubriasurvive.database.entity.dao.StudentDao
 import com.example.uninsubriasurvive.database.utility.ListExamConverter
+import com.example.uninsubriasurvive.database.utility.ListExamWithDateConverter
+
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -23,9 +25,13 @@ import kotlinx.coroutines.launch
         Exam::class,
         Dates::class
     ],
-    version = 9
+    version = 11
 )
-@TypeConverters(ListExamConverter::class)
+@TypeConverters(
+    ListExamConverter::class,
+    ListExamWithDateConverter::class
+)
+
 abstract class Db: RoomDatabase() {
 
     abstract val dao: StudentDao

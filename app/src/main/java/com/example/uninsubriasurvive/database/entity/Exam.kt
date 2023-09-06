@@ -31,4 +31,9 @@ data class ExamWithDates(
     val dates: List<Dates>
 )
 
+data class ExamWithDate(
+    val exam: Exam,
+    val date: Dates
+)
+
 

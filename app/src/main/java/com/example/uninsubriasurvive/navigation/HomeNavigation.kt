@@ -214,13 +214,14 @@ fun HomeNavigationScreen(
                         ExamDetailsScreen(
                             navHomeController = navHomeController ,
                             examViewModel = examViewModel,
-
+                            studentViewModel = studentViewModel
                         )
                     }
                 }
                 composable(Screen.Booklet.route) {
                     BookletScreen(
-                        navHomeController
+                        navHomeController,
+                        studentViewModel = studentViewModel
                     )
                 }
                 composable(Screen.Pavilion.route) {

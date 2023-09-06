@@ -6,6 +6,7 @@ import androidx.room.PrimaryKey
 import androidx.room.Relation
 import androidx.room.TypeConverters
 import com.example.uninsubriasurvive.database.utility.ListExamConverter
+import com.example.uninsubriasurvive.database.utility.ListExamWithDateConverter
 
 @Entity
 data class Student(
@@ -16,8 +17,8 @@ data class Student(
     val matricola: String,
     val email: String,
     val profilePictureUrl: String?,
-    @TypeConverters(ListExamConverter::class) val interested: List<Exam>?,
-    @TypeConverters(ListExamConverter::class) val maybe: List<Exam>?,
-    @TypeConverters(ListExamConverter::class) val notInterested: List<Exam>?,
+    val interested: List<ExamWithDate> = ArrayList<ExamWithDate>(),
+    val maybe: List<Exam> = ArrayList<Exam>(),
+    val notInterested: List<Exam> = ArrayList<Exam>(),
 )
 
