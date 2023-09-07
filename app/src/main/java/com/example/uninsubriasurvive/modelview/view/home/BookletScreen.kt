@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material.Card
 import androidx.compose.material.IconButton
 import androidx.compose.material.RadioButton
@@ -53,10 +55,6 @@ fun BookletScreen(
 
     val studentState by studentViewModel.state.collectAsState()
     val onEvent = studentViewModel::onEvent
-
-    val selectInterest: Boolean by remember{ mutableStateOf(true) }
-    val selectMaybeInterest by remember { mutableStateOf(false) }
-    val selectNotInterest by remember { mutableStateOf(false) }
 
     var radioButton: RadioButtonSelection by remember {
         mutableStateOf(RadioButtonSelection.ShowInterested)
@@ -111,7 +109,7 @@ fun BookletScreen(
     }
     Spacer(modifier = Modifier.height(22.dp))
     Column (
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().padding(12.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ){
@@ -139,8 +137,11 @@ fun BookletScreen(
             LazyColumn() {
                 items(studentState.maybe) { item: Exam ->
 
-                    ShowExamInBooklet(exam = item, onEvent = onEvent)
-
+                    ShowExamInBooklet(
+                        exam = item,
+                        onEvent = onEvent,
+                        filter = "maybe"
+                    )
                 }
             }
         }
@@ -150,29 +151,28 @@ fun BookletScreen(
                 Text(text = "Nessun esame da visualizzare",color = Color.Black)
             }
 
-            print("DEntro gli esami da scartare" )
             LazyColumn() {
                 items(studentState.notInterested) { item: Exam ->
                     print("ESAME $item")
 
-                    ShowExamInBooklet(exam = item, onEvent = onEvent)
+                    ShowExamInBooklet(
+                        exam = item,
+                        onEvent = onEvent,
+                        filter = "notInterest"
+                    )
 
                 }
             }
 
         }
-
-
-
-
     }
-
 }
 
 @Composable
 fun ShowExamInBooklet(
     exam: Exam,
-    onEvent: (UserEvent) -> Unit
+    onEvent: (UserEvent) -> Unit,
+    filter: String
 ) {
     Card (
         elevation = 6.dp,
@@ -180,6 +180,7 @@ fun ShowExamInBooklet(
         modifier = Modifier
             .fillMaxWidth()
             .padding(12.dp),
+        shape = CircleShape.copy(CornerSize(12.dp))
 
         ){
 
@@ -189,9 +190,9 @@ fun ShowExamInBooklet(
             ) {
                 Text(
                     text = exam.name,
-                    style = MaterialTheme.typography.titleMedium.copy(
-                        color = MaterialTheme.colorScheme.tertiary,
-                        fontWeight = FontWeight.SemiBold
+                    style = MaterialTheme.typography.titleLarge.copy(
+                        color = MaterialTheme.colorScheme.secondary,
+                        fontWeight = FontWeight.Bold
                     )
                 )
                 Spacer(modifier = Modifier.height(6.dp))
@@ -199,13 +200,13 @@ fun ShowExamInBooklet(
                 Row {
                     Text(
                         text = "Modalita': ",
-                        style = MaterialTheme.typography.bodySmall.copy(
-                            color = MaterialTheme.colorScheme.primary
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     )
                     Text(
                         text = exam.mode,
-                        style = MaterialTheme.typography.bodySmall.copy(
+                        style = MaterialTheme.typography.bodyMedium.copy(
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     )
@@ -214,19 +215,17 @@ fun ShowExamInBooklet(
                 Row {
                     Text(
                         text = "CFU: ",
-                        style = MaterialTheme.typography.bodySmall.copy(
-                            color = MaterialTheme.colorScheme.primary
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     )
                     Text(
                         text = exam.credits.toString(),
-                        style = MaterialTheme.typography.bodySmall.copy(
+                        style = MaterialTheme.typography.bodyMedium.copy(
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     )
                 }
-
-
             }
         }
         Row (
@@ -237,9 +236,12 @@ fun ShowExamInBooklet(
             Column (
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ){
-
-
-                IconButton(onClick = { onEvent(UserEvent.RemoveMaybeInterested(exam))}) {
+                IconButton(onClick = {
+                    if (filter == "maybe")
+                        onEvent(UserEvent.RemoveMaybeInterested(exam))
+                    else if (filter == "notInterest")
+                        onEvent(UserEvent.RemoveNotInterested(exam))
+                }) {
                     Icon(
                         imageVector = Icons.Outlined.Close,
                         contentDescription = null,
@@ -266,17 +268,17 @@ fun ShowExamWithDatesInBooklet(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp),
-
+        shape = CircleShape.copy(CornerSize(12.dp))
         ){
 
         Row(modifier = Modifier) {
             Column(
-                modifier = Modifier.padding(12.dp)
+                modifier = Modifier.padding(26.dp)
             ) {
                 Text(
                     text = exam.name,
-                    style = MaterialTheme.typography.titleMedium.copy(
-                        color = MaterialTheme.colorScheme.tertiary,
+                    style = MaterialTheme.typography.titleLarge.copy(
+                        color = MaterialTheme.colorScheme.secondary,
                         fontWeight = FontWeight.SemiBold
                     )
                 )
@@ -285,13 +287,13 @@ fun ShowExamWithDatesInBooklet(
                 Row {
                     Text(
                         text = "Modalita': ",
-                        style = MaterialTheme.typography.bodySmall.copy(
-                            color = MaterialTheme.colorScheme.primary
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     )
                     Text(
                         text = exam.mode,
-                        style = MaterialTheme.typography.bodySmall.copy(
+                        style = MaterialTheme.typography.bodyMedium.copy(
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     )
@@ -300,13 +302,13 @@ fun ShowExamWithDatesInBooklet(
                 Row {
                     Text(
                         text = "CFU: ",
-                        style = MaterialTheme.typography.bodySmall.copy(
-                            color = MaterialTheme.colorScheme.primary
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     )
                     Text(
                         text = exam.credits.toString(),
-                        style = MaterialTheme.typography.bodySmall.copy(
+                        style = MaterialTheme.typography.bodyMedium.copy(
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     )
@@ -314,26 +316,26 @@ fun ShowExamWithDatesInBooklet(
                 Row {
                     Text(
                         text = "Data: ",
-                        style = MaterialTheme.typography.bodySmall.copy(
-                            color = MaterialTheme.colorScheme.primary
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     )
                     Text(
                         text = dates.date,
-                        style = MaterialTheme.typography.bodySmall.copy(
+                        style = MaterialTheme.typography.bodyMedium.copy(
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = "Ora: ",
-                        style = MaterialTheme.typography.bodySmall.copy(
-                            color = MaterialTheme.colorScheme.primary
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     )
                     Text(
                         text = dates.time,
-                        style = MaterialTheme.typography.bodySmall.copy(
+                        style = MaterialTheme.typography.bodyMedium.copy(
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     )

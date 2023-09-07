@@ -104,11 +104,6 @@ fun HomeNavigationScreen(
         Screen.Pavilion,
     )
     val navHomeController = rememberNavController()
-    val navBackStackEntry by navHomeController.currentBackStackEntryAsState()
-    val currentDestination = navBackStackEntry?.destination
-
-
-
 
     Scaffold(
         topBar = {
@@ -267,6 +262,7 @@ fun HomeNavigationScreen(
                     )
                 }
                 composable("pavilion_details/{pavilionId}") {
+                    text = "Timeline Padiglione"
                     var pavilionid = 0
                     var pavilion : Pavilion? = null
                     it.arguments?.getString("pavilionId")?.let { it ->

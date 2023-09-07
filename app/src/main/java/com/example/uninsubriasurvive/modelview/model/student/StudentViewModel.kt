@@ -21,7 +21,7 @@ class StudentViewModel (
 
     val state = _state.asStateFlow()
 
-    val returnedVal = MutableLiveData<Student>()
+
 
     suspend fun findByEmail(emailAddress: String) {
         viewModelScope.launch {
@@ -41,16 +41,11 @@ class StudentViewModel (
             try {
                 val student: Student? = emailAddress?.let { dao.findByEmail(it) }
                 if (student == null ) {
-                    print("LO STUDENTE CCHE NON ESISTE $student" )
                     onEvent(UserEvent.IsAccountInDb(false))
                 } else {
-                    println("Student $student")
                     onEvent(UserEvent.IsAccountInDb(true))
-
                 }
-
             } catch (e:Exception) {
-                println("Eccezione $e")
                 onEvent(UserEvent.IsAccountInDb(false))
 
             }
@@ -103,11 +98,7 @@ class StudentViewModel (
                     dao.deleteStudent(event.student)
                 }
             }
-            is UserEvent.FindStudent -> {
-                viewModelScope.launch {
-                    returnedVal.value = dao.findByEmail(event.emailAddress)
-                }
-            }
+
              is UserEvent.IsAccountInDb -> {
               _state.update { it.copy(
                   isAccountInDb = event.isAccountInDb

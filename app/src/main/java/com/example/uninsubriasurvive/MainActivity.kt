@@ -23,7 +23,7 @@ import com.google.android.gms.auth.api.identity.Identity
 
 class MainActivity : ComponentActivity() {
 
-
+    //INIZIALIZZAZIONE VIEWMODEL E DATABASE
     private val db by lazy {
         Db.getDatabase(applicationContext)
     }
@@ -69,7 +69,6 @@ class MainActivity : ComponentActivity() {
         setContent {
             val context = LocalContext.current
             (context as? Activity)?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-
 
             AppTheme {
                 Surface {

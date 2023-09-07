@@ -39,7 +39,6 @@ import com.example.uninsubriasurvive.sign_in.SignInState
 fun SignInScreen(
     state: SignInState,
     onSignInClick: () -> Unit,
-//    navigateToSignUpScreen: () -> Unit
 ) {
     val context = LocalContext.current
 
@@ -85,7 +84,6 @@ fun SignInScreen(
                 }
             }
 
-
             Column(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.Center
@@ -100,7 +98,6 @@ fun SignInScreen(
         }
     }
 }
-
 
 @Composable
 @Preview

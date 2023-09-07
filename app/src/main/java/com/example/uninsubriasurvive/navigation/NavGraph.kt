@@ -37,18 +37,13 @@ fun NavGraph(
     pavilionViewModel: PavilionViewModel
     ) {
     val navController = rememberNavController()
-
     val userOnEvent = studentViewModel::onEvent
     val studentState by studentViewModel.state.collectAsState()
-
-    val examState by examViewModel.state.collectAsState()
-
     val coroutineScope = rememberCoroutineScope()
 
     NavHost(navController = navController, startDestination = "auth") {
 
         navigation(route = "auth", startDestination = "sign_in") {
-
             userOnEvent(UserEvent.ResetViewModel)
 
             composable("sign_in") {
@@ -61,7 +56,6 @@ fun NavGraph(
                         navController.navigate("application")
                     }
                 }
-
                 val launcher = rememberLauncherForActivityResult(
                     contract = ActivityResultContracts.StartIntentSenderForResult(),
                     onResult = { result ->
@@ -78,16 +72,11 @@ fun NavGraph(
 
                 LaunchedEffect(key1 = signInState.isSignInSuccessful) {
                     if (signInState.isSignInSuccessful) {
-                        Toast.makeText(
-                            applicationContext,
-                            "Sign in successful",
-                            Toast.LENGTH_LONG
-                        ).show()
                         navController.navigate("complete_registration")
                         viewModel.resetState()
-
                     }
                 }
+
                 SignInScreen(
                     state = signInState,
                     onSignInClick = {
@@ -97,10 +86,8 @@ fun NavGraph(
                                 IntentSenderRequest.Builder(
                                     signInIntentSender ?: return@launch
                                 ).build()
-
                             )
                         }
-
                     }
                 )
             }
@@ -134,11 +121,8 @@ fun NavGraph(
 
         navigation(route = "application", startDestination = "home") {
 
-
             composable("home") {
-
                 val userData = googleAuthUiClient.getSignedInUser()
-
 
                 LaunchedEffect(key1 = true){
                     coroutineScope.launch {
@@ -153,12 +137,7 @@ fun NavGraph(
                     pavilionViewModel = pavilionViewModel
                 )
             }
-
         }
-
-
-
-
     }
     
 }

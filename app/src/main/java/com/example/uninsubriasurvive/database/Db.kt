@@ -30,7 +30,7 @@ import kotlinx.coroutines.launch
         Dates::class,
         Pavilion::class
     ],
-    version = 14
+    version = 15
 )
 @TypeConverters(
     ListExamConverter::class,
@@ -64,39 +64,61 @@ abstract class Db: RoomDatabase() {
                     val dateDao = database.datesDao
                     val pavilionDao = database.pavilionDao
 
-                    val esame1 = Exam( null,"Analisi", 9,"Scritto")
-                    val esame2 = Exam( null,"PDM", 9,"Scritto")
-                    val esame3 = Exam( null,"Programmazione", 9,"Scritto")
-                    val esame4 = Exam( null,"Logica", 9,"Scritto")
+                    val analisi = Exam( null,"Analisi", 9,"Scritto")
+                    val pdm = Exam( null,"PDM", 9,"Scritto")
+                    val programmazione = Exam( null,"Programmazione", 9,"Scritto")
+                    val logica = Exam( null,"Logica", 9,"Scritto")
+                    val algoritmi = Exam( null,"Algoritmi", 9,"Scritto + Orale")
+                    val laboratorioA = Exam( null,"Laboratorio A", 9,"Scritto")
+                    val sistemiEReti = Exam( null,"Sistemi e reti", 9,"Scritto")
 
-                    val esameId1 = examDao.insertExam(esame1).toInt()
-                    val esameId2 = examDao.insertExam(esame2).toInt()
-                    val esameId3 = examDao.insertExam(esame3).toInt()
-                    val esameId4 = examDao.insertExam(esame4).toInt()
+                    val esameId1 = examDao.insertExam(analisi).toInt()
+                    val esameId2 = examDao.insertExam(pdm).toInt()
+                    val esameId3 = examDao.insertExam(programmazione).toInt()
+                    val esameId4 = examDao.insertExam(logica).toInt()
+                    val esameId5 = examDao.insertExam(algoritmi).toInt()
+                    val esameId6 = examDao.insertExam(laboratorioA).toInt()
+                    val esameId7 = examDao.insertExam(sistemiEReti).toInt()
 
 
                     val datePerEsame1 = listOf(
                         Dates(null, "2023-09-10", "09:00", esameId1),
-                        Dates(null, "2023-09-12", "14:30", esameId1)
+                        Dates(null, "2023-09-22", "14:30", esameId1)
                     )
 
                     val datePerEsame2 = listOf(
-                        Dates(null, "2023-09-15", "11:00", esameId2),
+                        Dates(null, "2023-09-05", "11:00", esameId2),
                         Dates(null, "2023-09-20", "16:45", esameId2)
                     )
                     val datePerEsame3 = listOf(
-                        Dates(null, "2023-09-15", "11:00", esameId3),
-                        Dates(null, "2023-09-20", "16:45", esameId3)
+                        Dates(null, "2023-09-08", "11:00", esameId3),
+                        Dates(null, "2023-09-16", "16:45", esameId3)
                     )
                     val datePerEsame4 = listOf(
                         Dates(null, "2023-09-15", "11:00", esameId4),
                         Dates(null, "2023-09-20", "16:45", esameId4)
                     )
+                    val datePerEsame5 = listOf(
+                        Dates(null, "2023-09-10", "11:00", esameId5),
+                        Dates(null, "2023-09-18", "16:45", esameId5)
+                    )
+                    val datePerEsame6 = listOf(
+                        Dates(null, "2023-09-15", "11:00", esameId6),
+                        Dates(null, "2023-09-20", "16:45", esameId6)
+                    )
+                    val datePerEsame7 = listOf(
+                        Dates(null, "2023-09-03", "11:00", esameId7),
+                        Dates(null, "2023-09-12", "16:45", esameId7)
+                    )
+
 
                     dateDao.insertDates(datePerEsame1)
                     dateDao.insertDates(datePerEsame2)
                     dateDao.insertDates(datePerEsame3)
                     dateDao.insertDates(datePerEsame4)
+                    dateDao.insertDates(datePerEsame5)
+                    dateDao.insertDates(datePerEsame6)
+                    dateDao.insertDates(datePerEsame7)
 
                     val pavilionToInsert = PavilionData
                     pavilionDao.insertAllPavilion(pavilionToInsert.pavilions)

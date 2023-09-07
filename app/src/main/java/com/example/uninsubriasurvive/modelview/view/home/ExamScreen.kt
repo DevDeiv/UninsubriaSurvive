@@ -2,6 +2,8 @@ package com.example.uninsubriasurvive.modelview.view.home
 
 import android.widget.Space
 import android.widget.Toast
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -101,7 +103,6 @@ fun ShowExam(
     goToDetails: () -> Unit,
     onEvent: (UserEvent) -> Unit,
     studentState: StudentState,
-
 ) {
 
     val context = LocalContext.current
@@ -127,13 +128,14 @@ fun ShowExam(
         )
     }
 
+
     Card (
         elevation = 6.dp,
         backgroundColor = MaterialTheme.colorScheme.inverseOnSurface,
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp, horizontal = 10.dp),
-        shape = CircleShape.copy(all = CornerSize(12.dp))
+        shape = CircleShape.copy(all = CornerSize(12.dp)),
 
         ){
 
@@ -392,6 +394,32 @@ fun ShowDialogForDeleteExamsReservationAndAddNotInterestedExam(
         }
 
     }
+
+}
+
+fun getBorderColor(
+    studentState: StudentState,
+    exam: Exam
+): Color{
+    var borderColor: Color = Color.Transparent
+
+    studentState.interested.forEach {
+        if(it.exam.examId == exam.examId)
+        {
+            borderColor = Color.Green
+        }
+    }
+    studentState.maybe.forEach {
+        if (it.examId == exam.examId) {
+            borderColor = Color.Yellow
+        }
+    }
+    studentState.notInterested.forEach {
+        if (it.examId == exam.examId) {
+            borderColor = Color.Red
+        }
+    }
+    return borderColor
 
 }
 
