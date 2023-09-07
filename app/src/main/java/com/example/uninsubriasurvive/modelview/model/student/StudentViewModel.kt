@@ -246,7 +246,7 @@ class StudentViewModel (
                 }
 
                 val maybeExams = retrieveMaybeExams()
-                if (_state.value.notInterested.contains(event.exam)) {
+                if (_state.value.maybe.contains(event.exam)) {
                     maybeExams.remove(event.exam)
                 }
 

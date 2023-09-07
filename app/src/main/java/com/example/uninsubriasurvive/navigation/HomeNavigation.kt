@@ -361,7 +361,7 @@ fun HomeNavigationScreen(
                             modifier = Modifier.padding(8.dp),
                         ) {
                             Text(
-                                "Dismiss",
+                                "Chiudi",
                                 style = MaterialTheme.typography.bodyMedium.copy(
                                     color = MaterialTheme.colorScheme.onBackground
                                 )

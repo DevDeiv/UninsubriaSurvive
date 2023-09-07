@@ -107,14 +107,12 @@ fun BookletScreen(
             )
         )
     }
-    Spacer(modifier = Modifier.height(22.dp))
+    Spacer(modifier = Modifier.height(6.dp))
     Column (
-        modifier = Modifier.fillMaxSize().padding(12.dp),
+        modifier = Modifier.padding(top = 80.dp, bottom = 6.dp, start = 12.dp, end = 12.dp).fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ){
-
-
 
         if (radioButton.filter == RadioButtonSelection.ShowInterested.filter) {
             if (studentState.interested.isEmpty()) {

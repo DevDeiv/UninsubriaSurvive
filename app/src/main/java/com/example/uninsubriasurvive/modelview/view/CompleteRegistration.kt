@@ -1,5 +1,6 @@
 package com.example.uninsubriasurvive.modelview.view
 
+import android.widget.Space
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -41,7 +42,8 @@ fun isSerialNumberValid(text: String): Boolean {
 fun CompleteRegistrationScreen(
     state: StudentState,
     onEvent: (UserEvent) -> Unit,
-    navigateToHomeScreen: () -> Unit
+    navigateToHomeScreen: () -> Unit,
+    navigateBack: () -> Unit
 ) {
     val context = LocalContext.current
     var isFirstNameValid by remember { mutableStateOf(true) }
@@ -52,7 +54,8 @@ fun CompleteRegistrationScreen(
     Box(modifier = Modifier) {
         Column(
             modifier = Modifier
-                .fillMaxSize().padding(vertical = 100.dp),
+                .fillMaxSize()
+                .padding(vertical = 100.dp),
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -129,9 +132,12 @@ fun CompleteRegistrationScreen(
 
                     }
                 )
+                Spacer(modifier = Modifier.height(12.dp))
+                LoginButton(
+                    text = "Annulla",
+                    onclick = { navigateBack() }
+                )
             }
-
-
         }
     }
 

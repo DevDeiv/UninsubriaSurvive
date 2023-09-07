@@ -127,8 +127,6 @@ fun ShowExam(
             exam = exam
         )
     }
-
-
     Card (
         elevation = 6.dp,
         backgroundColor = MaterialTheme.colorScheme.inverseOnSurface,
@@ -219,12 +217,21 @@ fun ShowExam(
                                }
                            }
                            if (check) {
-                               onEvent(UserEvent.AddMaybeInterested(exam))
-                               Toast.makeText(
-                                   context,
-                                   "Esame aggiunto alla lista 'da osservare'",
-                                   Toast.LENGTH_SHORT
-                               ).show()
+                              if (studentState.maybe.contains(exam)) {
+                                  Toast.makeText(
+                                      context,
+                                      "Esame gia' presente nella lista da osservare'",
+                                      Toast.LENGTH_SHORT
+                                  ).show()
+                              }
+                               else{
+                                  onEvent(UserEvent.AddMaybeInterested(exam))
+                                  Toast.makeText(
+                                      context,
+                                      "Esame aggiunto alla lista 'da osservare'",
+                                      Toast.LENGTH_SHORT
+                                  ).show()
+                              }
                            }
 
                        }) {
@@ -242,12 +249,20 @@ fun ShowExam(
                        }
                    }
                    if (check){
-                       onEvent(UserEvent.AddNotInterested(exam))
-                       Toast.makeText(
-                           context,
-                           "Esame aggiunto alla lista 'non interessato'",
-                           Toast.LENGTH_SHORT
-                       ).show()
+                      if (studentState.notInterested.contains(exam)) {
+                          Toast.makeText(
+                              context,
+                              "Esame gia' presente nella lista 'non interessato'",
+                              Toast.LENGTH_SHORT
+                          ).show()
+                      } else {
+                          onEvent(UserEvent.AddNotInterested(exam))
+                          Toast.makeText(
+                              context,
+                              "Esame aggiunto alla lista 'non interessato'",
+                              Toast.LENGTH_SHORT
+                          ).show()
+                      }
                    }
                }) {
                   Text(

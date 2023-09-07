@@ -105,14 +105,19 @@ fun NavGraph(
                     navController.navigate("application")
                 }
                 else {
-                    userOnEvent(UserEvent.SetEmail(userData?.emailAddress))
-                    userOnEvent(UserEvent.SetProfilePicture(userData?.profilePictureUrl))
-                    userOnEvent(UserEvent.IsAccountInDb(isAccountInDb = false))
-
                     CompleteRegistrationScreen(
                         state = studentState,
                         onEvent = userOnEvent ,
-                        navigateToHomeScreen = { navController.navigate("application") }
+                        navigateToHomeScreen = {
+                            userOnEvent(UserEvent.SetEmail(userData?.emailAddress))
+                            userOnEvent(UserEvent.SetProfilePicture(userData?.profilePictureUrl))
+                            userOnEvent(UserEvent.IsAccountInDb(isAccountInDb = false))
+                            navController.navigate("application")
+                                               },
+                        navigateBack = {
+                            coroutineScope.launch { googleAuthUiClient.signOut() }
+                            navController.popBackStack()
+                        }
                     )
                 }
             }
