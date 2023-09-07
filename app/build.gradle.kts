@@ -78,6 +78,7 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 
     implementation("com.google.android.gms:play-services-auth:20.7.0")
+    implementation ("com.google.maps.android:android-maps-utils:3.4.0")
 
     implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.0")
     implementation ("androidx.lifecycle:lifecycle-runtime-compose:2.6.0")

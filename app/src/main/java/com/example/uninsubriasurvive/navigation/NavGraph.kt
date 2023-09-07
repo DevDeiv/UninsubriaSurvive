@@ -18,6 +18,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
 import com.example.uninsubriasurvive.modelview.model.exam.ExamViewModel
+import com.example.uninsubriasurvive.modelview.model.pavilion.PavilionEvent
+import com.example.uninsubriasurvive.modelview.model.pavilion.PavilionViewModel
 import com.example.uninsubriasurvive.modelview.model.student.UserEvent
 import com.example.uninsubriasurvive.modelview.model.student.StudentViewModel
 import com.example.uninsubriasurvive.modelview.view.CompleteRegistrationScreen
@@ -32,7 +34,7 @@ fun NavGraph(
     applicationContext: Context,
     studentViewModel: StudentViewModel,
     examViewModel: ExamViewModel,
-
+    pavilionViewModel: PavilionViewModel
     ) {
     val navController = rememberNavController()
 
@@ -134,6 +136,7 @@ fun NavGraph(
 
 
             composable("home") {
+
                 val userData = googleAuthUiClient.getSignedInUser()
 
 
@@ -142,12 +145,12 @@ fun NavGraph(
                         userData?.emailAddress?.let { it1 -> studentViewModel?.findByEmail(it1) }
                     }
                 }
-
                 HomeNavigationScreen(
                     studentViewModel = studentViewModel,
                     examViewModel = examViewModel,
                     googleAuthUiClient = googleAuthUiClient,
-                    navController = navController
+                    navController = navController,
+                    pavilionViewModel = pavilionViewModel
                 )
             }
 

@@ -1,6 +1,7 @@
 package com.example.uninsubriasurvive.navigation
 
 import android.widget.Toast
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,6 +22,7 @@ import androidx.compose.material.TextButton
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccountCircle
+import androidx.compose.material.icons.outlined.ArrowBack
 
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -41,6 +43,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.toUpperCase
@@ -55,20 +58,26 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
+import com.example.uninsubriasurvive.R
+import com.example.uninsubriasurvive.database.entity.Pavilion
 import com.example.uninsubriasurvive.modelview.model.exam.ExamEvent
 import com.example.uninsubriasurvive.modelview.model.exam.ExamState
 import com.example.uninsubriasurvive.modelview.model.exam.ExamViewModel
+import com.example.uninsubriasurvive.modelview.model.pavilion.PavilionEvent
+import com.example.uninsubriasurvive.modelview.model.pavilion.PavilionViewModel
 import com.example.uninsubriasurvive.modelview.model.student.StudentState
 import com.example.uninsubriasurvive.modelview.model.student.StudentViewModel
 import com.example.uninsubriasurvive.modelview.view.home.BookletScreen
 import com.example.uninsubriasurvive.modelview.view.home.ExamDetailsScreen
 import com.example.uninsubriasurvive.modelview.view.home.ExamScreen
 import com.example.uninsubriasurvive.modelview.view.home.MainPageScreen
+import com.example.uninsubriasurvive.modelview.view.home.PavilionDetailsScreen
 import com.example.uninsubriasurvive.modelview.view.home.PavilionScreen
 import com.example.uninsubriasurvive.modelview.view.utility.LoginButton
 import com.example.uninsubriasurvive.sign_in.GoogleAuthUiClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -76,6 +85,7 @@ fun HomeNavigationScreen(
     studentViewModel: StudentViewModel,
     examViewModel: ExamViewModel,
     googleAuthUiClient: GoogleAuthUiClient,
+    pavilionViewModel: PavilionViewModel,
     navController: NavController
 ) {
     var text by remember { mutableStateOf("") }
@@ -94,38 +104,56 @@ fun HomeNavigationScreen(
         Screen.Pavilion,
     )
     val navHomeController = rememberNavController()
+    val navBackStackEntry by navHomeController.currentBackStackEntryAsState()
+    val currentDestination = navBackStackEntry?.destination
+
+
 
 
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.tertiary,
-
+                    containerColor = MaterialTheme.colorScheme.secondary,
                 ),
                 title = {
                     Text(
-                        text = text,
+                        text = text.toUpperCase(Locale.ROOT),
                         style = MaterialTheme.typography.titleLarge.copy(
-                            color = MaterialTheme.colorScheme.onBackground
+                            color = MaterialTheme.colorScheme.background,
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold
                         )
                     )
                 },
                 actions = {
-                    IconButton(
-                        onClick = { showDialog = true },
-                    ) {
-                        Icon(
-                            imageVector = Icons.Outlined.AccountCircle,
+                        AsyncImage(
+                            model = studentState.profilePicture,
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onBackground,
-                            modifier = Modifier.size(30.dp),
-
+                            modifier = Modifier
+                                .padding(horizontal = 22.dp)
+                                .size(45.dp)
+                                .clip(CircleShape)
+                                .clickable {
+                                    showDialog = true
+                                }
                         )
+
+                },
+                navigationIcon = {
+                    val navBackStackEntry by navHomeController.currentBackStackEntryAsState()
+                    val currentDestination = navBackStackEntry?.destination
+                    if (currentDestination?.hierarchy?.any { it.route == "exam_details/{examId}" || it.route == "pavilion_details/{pavilionId}" } == true) {
+                        IconButton(onClick = { navHomeController.popBackStack() }) {
+                            Icon(
+                                imageVector = Icons.Outlined.ArrowBack,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.background
+                            )
+                        }
                     }
-
-
                 }
+
             )
         },
         bottomBar = {
@@ -155,7 +183,7 @@ fun HomeNavigationScreen(
                         icon = {
                             Box(modifier = Modifier, contentAlignment = Alignment.Center) {
                                 Icon(
-                                    screen.icon,
+                                    painterResource(id = screen.icon ) ,
                                     contentDescription = null,
                                     tint = MaterialTheme.colorScheme.tertiary,
                                     modifier = Modifier
@@ -194,12 +222,13 @@ fun HomeNavigationScreen(
                 startDestination = Screen.Home.route,
                 Modifier.padding(innerPadding)
             ) {
-                text = "Home"
+
                 composable(Screen.Home.route) {
-                    MainPageScreen(navHomeController)
+                    text = "Home"
+                    MainPageScreen(navHomeController, studentState = studentState)
                 }
                 composable(Screen.Exams.route) {
-                    text = "Lista Esami"
+                    text = "Esami"
 
                     examOnEvent(ExamEvent.GetAllWithDates)
                     ExamScreen(
@@ -209,6 +238,7 @@ fun HomeNavigationScreen(
                     )
                 }
                 composable("exam_details/{examId}") {
+                    text = "Orari Esame"
                     it.arguments?.getString("examId")?.let { it1 ->
                         examOnEvent(ExamEvent.GetExamWithDateById(it1.toInt()))
                         ExamDetailsScreen(
@@ -219,15 +249,41 @@ fun HomeNavigationScreen(
                     }
                 }
                 composable(Screen.Booklet.route) {
+                    text = "Libretto"
                     BookletScreen(
                         navHomeController,
                         studentViewModel = studentViewModel
                     )
                 }
                 composable(Screen.Pavilion.route) {
+                    text = "Padiglioni"
+                    val onEvent = pavilionViewModel::onEvent
+                    val pavilionState by pavilionViewModel.state.collectAsState()
+                    onEvent(PavilionEvent.GetAll)
+
                     PavilionScreen(
-                        navHomeController
+                        navHomeController,
+                        pavilionState = pavilionState
                     )
+                }
+                composable("pavilion_details/{pavilionId}") {
+                    var pavilionid = 0
+                    var pavilion : Pavilion? = null
+                    it.arguments?.getString("pavilionId")?.let { it ->
+                        pavilionid = it.toInt()
+                    }
+                    val pavilionState by pavilionViewModel.state.collectAsState()
+                    pavilionState.pavilions.forEach {
+                        if (it.id == pavilionid) {
+                            pavilion = it
+                        }
+                    }
+
+                    PavilionDetailsScreen(
+                        pavilion = pavilion!!,
+                        context = context
+                    )
+
                 }
             }
         }
@@ -331,50 +387,6 @@ fun HomeNavigationScreen(
             }
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-//         Column (
-//             modifier = Modifier.padding(paddingValues),
-//             verticalArrangement = Arrangement.Center,
-//             horizontalAlignment = Alignment.CenterHorizontally
-//         ){
-//             if(userState?.profilePicture != null) {
-//                 AsyncImage(
-//                     model = userState.profilePicture,
-//                     contentDescription = null,
-//                     modifier = Modifier
-//                         .size(150.dp)
-//                         .clip(CircleShape)
-//                 )
-//             }
-//             Spacer(modifier = Modifier.height(16.dp))
-//             if (userState?.emailAddress != null) {
-//                 Text(
-//                     text = userState.emailAddress,
-//                     color = Color.Black,
-//                     textAlign = TextAlign.Center,
-//                     fontSize = 32.sp,
-//                     fontWeight = FontWeight.SemiBold
-//                 )
-//             }
-//             Spacer(modifier = Modifier.height(16.dp))
-//             LoginButton(
-//                 text = "SignOut",
-//                 onclick = onSignOut
-//             )
-//
-//         }
-
 
 
 

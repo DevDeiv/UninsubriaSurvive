@@ -141,8 +141,8 @@ fun isSerialNumberValid(text: String): Boolean {
 fun CustomText(text: String) {
     Text(
         text = text,
-        style = MaterialTheme.typography.titleLarge.copy(
-            color = MaterialTheme.colorScheme.onTertiaryContainer),
+        style = MaterialTheme.typography.bodyMedium.copy(
+            color = Color.Red),
         textAlign = TextAlign.Center
     )
 

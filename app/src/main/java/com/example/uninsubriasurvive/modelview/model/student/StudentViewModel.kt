@@ -72,13 +72,21 @@ class StudentViewModel (
         return student
     }
 
-    private fun retrieveExams() :ArrayList<Exam> {
+    private fun retrieveMaybeExams() :ArrayList<Exam> {
         val exams = ArrayList<Exam>()
         _state.value.maybe.forEach {
             exams.add(it)
         }
         return exams
     }
+    private fun retrieveNotInterestedExam(): ArrayList<Exam> {
+        val exams = ArrayList<Exam>()
+        _state.value.notInterested.forEach {
+            exams.add(it)
+        }
+        return exams
+    }
+
     private fun retrieveExamsWhitDate(): ArrayList<ExamWithDate> {
         val examsWithDate = ArrayList<ExamWithDate>()
         _state.value.interested.forEach {
@@ -182,8 +190,21 @@ class StudentViewModel (
                 val exams = retrieveExamsWhitDate()
                 exams.add(event.examWithDate)
 
+                val maybeExams = retrieveMaybeExams()
+                val notInterestExam = retrieveNotInterestedExam()
+
+
+                if (_state.value.maybe.contains(event.examWithDate.exam)){
+                    maybeExams.remove(event.examWithDate.exam)
+                }
+                if (_state.value.notInterested.contains(event.examWithDate.exam)){
+                    notInterestExam.remove(event.examWithDate.exam)
+                }
+
                 _state.update { it.copy(
-                    interested = exams
+                    interested = exams,
+                    maybe = maybeExams,
+                    notInterested = notInterestExam
                 ) }
 
                 val student = buildStudent()
@@ -193,10 +214,25 @@ class StudentViewModel (
             }
 
             is UserEvent.AddMaybeInterested -> {
-                val exams = retrieveExams()
+                val exams = retrieveMaybeExams()
                 exams.add(event.exam)
+
+                val notInterestExam = retrieveNotInterestedExam()
+                val interestExams = retrieveExamsWhitDate()
+
+                interestExams.forEach{
+                    if (it.exam.examId == event.exam.examId) {
+                        interestExams.remove(it)
+                    }
+                }
+
+                if (_state.value.notInterested.contains(event.exam)) {
+                    notInterestExam.remove(event.exam)
+                }
                 _state.update { it.copy(
-                    maybe = exams
+                    maybe = exams,
+                    notInterested = notInterestExam,
+                    interested = interestExams
                 ) }
 
                 val student = buildStudent()
@@ -206,12 +242,27 @@ class StudentViewModel (
                 }
                 println("QUI ARRRIVO BENE")
             }
+
             is UserEvent.AddNotInterested -> {
-                val exams = retrieveExams()
+                val exams = retrieveNotInterestedExam()
                 exams.add(event.exam)
 
+                val interestExams = retrieveExamsWhitDate()
+                interestExams.forEach{
+                    if (it.exam.examId == event.exam.examId) {
+                        interestExams.remove(it)
+                    }
+                }
+
+                val maybeExams = retrieveMaybeExams()
+                if (_state.value.notInterested.contains(event.exam)) {
+                    maybeExams.remove(event.exam)
+                }
+
                 _state.update { it.copy(
-                    notInterested = exams
+                    notInterested = exams,
+                    maybe = maybeExams,
+                    interested = interestExams
                 ) }
 
                 val student = buildStudent()
@@ -234,7 +285,7 @@ class StudentViewModel (
             }
 
             is UserEvent.RemoveMaybeInterested -> {
-                val exams = retrieveExams()
+                val exams = retrieveMaybeExams()
                 exams.remove(event.exam)
 
                 _state.update { it.copy(
@@ -248,7 +299,7 @@ class StudentViewModel (
             }
 
             is UserEvent.RemoveNotInterested -> {
-                val exams = retrieveExams()
+                val exams = retrieveNotInterestedExam()
                 exams.remove(event.exam)
 
                 _state.update { it.copy(
